@@ -1,0 +1,190 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Practice
+{
+    class Program
+    {
+        public static int sumOfPrimes(int primes)
+        {
+            bool isPrime = true;
+            int sum = 0;
+            if (primes >=2)
+                sum = 2;
+
+            int divisor = 2;
+            for (int num = 3; num <= primes; num++)
+            {
+                divisor = 2;
+                while (divisor <= num / 2 && divisor != num)
+                {
+                    if (num % divisor == 0)
+                    {
+                        isPrime = false;
+                        break;
+                    }
+                    divisor++;
+                }
+
+                if (isPrime)
+                {
+                    sum += num;
+                }
+                isPrime = true;
+            }
+            return sum;
+        }
+
+        public static int findIndex(int[] arr, int target)
+        {
+            int half = arr.Length/2;
+            int index = arr.Length/2;
+            while(half >= 0 && half < arr.Length)
+            {
+                if (arr[half] > target)
+                {
+                    half = half/2;
+                }
+                else if (arr[half] < target)
+                {
+                    if (half >= arr.Length/2)    //upper half
+                        half = half + (arr.Length-half)/2;
+                    else    //lower half
+                    {
+                        half += half / 2;
+                    }
+                }
+                else
+                {
+                    if (arr[half] == target)
+                    {
+                        if (half > 0 && arr[half-1] == target)
+                        {
+                            half = half/2;
+                        }
+                        else
+                        {
+                            return half;
+                        }
+                    }
+                }
+            }
+            return half;
+        }
+
+        public static int convertRoman(string roman)
+        {
+            int index = 0;
+            int prevSum = 0;
+            int totalSum = 0;
+            while(index < roman.Length)
+            {
+                totalSum += romanToInt(roman[index]);
+                //if (prevSum != 0 && prevSum < romanToInt(roman[index]))
+                if (totalSum != 0 && index > 0 && romanToInt(roman[index - 1]) < romanToInt(roman[index]))  //need to subtract
+                {
+                    int tempindex = index-1;
+                    int toCompare = romanToInt(roman[index]);
+                    while(tempindex >= 0 && romanToInt(roman[tempindex]) < toCompare)
+                    {
+                        totalSum -= romanToInt(roman[tempindex]);
+                        tempindex--;
+                    }
+                    totalSum -= romanToInt(roman[tempindex+1]);
+                }
+                index++;
+
+            }
+            return totalSum;
+        }
+        public static int romanToInt(char roman)
+        {
+            switch(roman)
+            {
+                case 'I':
+                    return 1;
+                case 'V':
+                    return 5;
+                case 'X':
+                    return 10;
+                case 'L':
+                    return 50;
+                case 'C':
+                    return 100;
+                case 'D':
+                    return 500;
+                case 'M':
+                    return 1000;
+                default:
+                    return 0;
+            }
+                
+        }
+
+        //static void Main(string[] args)
+        //{
+        //    //Console.WriteLine(Program.sumOfPrimes(7));    //should be 17
+        //    //int [] temparr = {1,2,2,3,3,3,4,4,4,4,5,5};
+        //    //int temp = Program.findIndex(temparr,1);
+        //    //Console.WriteLine(temp);
+        //    int temp2 = Program.convertRoman("XCIX");
+        //    Console.ReadLine();
+        //}
+    }
+    class PageRange
+    {
+        private int[] pages;
+        public PageRange(string input)
+        {
+            string[] storage = input.Split(',');
+            int index = 0;
+            int temp = 0;
+            int lengthWanted;
+            
+            try
+            {
+                lengthWanted = Convert.ToInt32(storage[storage.Length - 1]);
+            }
+            catch(FormatException e)
+            {
+                string[] range = storage[storage.Length - 1].Split('-');
+                lengthWanted = Convert.ToInt32(range[1]);
+            }
+            
+            pages = new int[lengthWanted];
+            foreach(string page in storage)
+            {
+                try
+                {
+                    temp = Convert.ToInt32(page);
+                    pages[index] = temp;
+                    index++;
+                }
+                catch(FormatException e)
+                {
+                    string[] range = page.Split('-');
+                    int start = Convert.ToInt32(range[0]);
+                    int end = Convert.ToInt32(range[1]);
+                    while(start <= end)
+                    {
+                        pages[index] = start;
+                        index++;
+                        start++;
+                    }
+                }
+            }
+        }
+
+        
+        //static void Main(string[] args)
+        //{
+        //    //Console.WriteLine(Program.sumOfPrimes(7));    //should be 17
+        //    PageRange test = new PageRange("1, 2, 4-7, 9-10");
+        //}
+
+    }
+
+}
